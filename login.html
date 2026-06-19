@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Portal | ApexExchange Group</title>
+    <meta name="description" content="Securely log in to the ApexExchange Client Portal to access your stock brokerage accounts, corporate compliance filings, and market listings dashboard.">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- 1. Header Navigation -->
+    <header>
+        <div class="logo-container">
+            <a href="index.html" class="logo-container">
+                <div class="logo-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                        <polyline points="17 6 23 6 23 12"></polyline>
+                    </svg>
+                </div>
+                <div class="logo-text">APEX<span>EXCHANGE</span></div>
+            </a>
+        </div>
+
+        <nav>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="about.html">About Us</a>
+                <a href="services.html">Services</a>
+            </div>
+            <a href="login.html" class="btn-login" style="background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); box-shadow: none;">Client Portal</a>
+        </nav>
+
+        <div class="mobile-toggle" id="mobile-nav-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </header>
+
+    <!-- Mobile Drawer Menu -->
+    <div class="mobile-nav" id="mobile-menu-drawer">
+        <div class="mobile-nav-links">
+            <a href="index.html">Home</a>
+            <a href="about.html">About Us</a>
+            <a href="services.html">Services</a>
+            <a href="login.html">Client Portal</a>
+        </div>
+    </div>
+
+    <!-- 2. Login Page Container -->
+    <main class="login-container">
+        
+        <!-- Glassmorphic Login Card -->
+        <div class="login-card glass-panel glow-hover">
+            
+            <div class="login-header">
+                <h2>Secure Client Portal</h2>
+                <p>Access your investment dashboard and corporate fillings</p>
+            </div>
+
+            <!-- Investor / Corporate Tab Toggle -->
+            <div class="login-tabs">
+                <div class="login-tab-btn active" id="login-tab-investor" data-mode="investor">Investor Access</div>
+                <div class="login-tab-btn" id="login-tab-corporate" data-mode="corporate">Corporate Portal</div>
+            </div>
+
+            <!-- Login Error Message Block -->
+            <div class="login-error" id="login-error-message">
+                Please enter a valid PAN card / Client ID and password.
+            </div>
+
+            <!-- Form -->
+            <form id="login-form-submit">
+                
+                <div class="form-field">
+                    <label for="login-client-id" id="label-client-id">PAN Card / Client ID</label>
+                    <input type="text" id="login-client-id" class="form-input" placeholder="e.g. ABCDE1234F or 100489" required autocomplete="username">
+                </div>
+
+                <div class="form-field" style="position: relative;">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" class="form-input" placeholder="••••••••••••" required autocomplete="current-password">
+                    <span class="password-toggle" id="password-toggle-visibility">
+                        <!-- Eye icon -->
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                    </span>
+                </div>
+
+                <div class="form-field" id="otp-field-container" style="display: none; animation: slideDown 0.3s ease;">
+                    <label for="login-otp-code">6-Digit 2FA Security PIN</label>
+                    <input type="text" id="login-otp-code" class="form-input" placeholder="Enter 6-digit PIN" maxlength="6" pattern="\d{6}">
+                </div>
+
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" checked>
+                        <span>Keep me logged in</span>
+                    </label>
+                    <a href="#" class="forgot-password">Reset Password?</a>
+                </div>
+
+                <button type="submit" class="btn-submit" id="btn-login-submit">
+                    <span>Authenticate Account</span>
+                </button>
+
+            </form>
+
+        </div>
+
+    </main>
+
+    <!-- Detailed Stock Modal (Shared) -->
+    <div id="stock-modal" class="modal-overlay">
+        <div class="modal-content glass-panel">
+            <span class="modal-close" id="modal-close-btn">&times;</span>
+            <div class="modal-header">
+                <h3 id="modal-stock-title">Stock Details</h3>
+                <span class="modal-name" id="modal-stock-subtitle">Company Full Name</span>
+            </div>
+            <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 15px 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div>
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">Last Traded Price</span>
+                    <h2 style="font-size: 2.2rem; font-family: monospace; font-weight: 800;" id="modal-stock-ltp">₹0,000.00</h2>
+                </div>
+                <div style="text-align: right;">
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">Change (%)</span>
+                    <h3 id="modal-stock-change" style="font-size: 1.4rem; font-family: monospace;">+0.00 (+0.00%)</h3>
+                </div>
+            </div>
+            <div class="modal-stats">
+                <div class="modal-stat-box">
+                    <div class="modal-stat-label">Prev Close</div>
+                    <div class="modal-stat-value" id="modal-stock-prev">0,000.00</div>
+                </div>
+                <div class="modal-stat-box">
+                    <div class="modal-stat-label">Open</div>
+                    <div class="modal-stat-value" id="modal-stock-open">0,000.00</div>
+                </div>
+                <div class="modal-stat-box">
+                    <div class="modal-stat-label">Daily High</div>
+                    <div class="modal-stat-value" id="modal-stock-high">0,000.00</div>
+                </div>
+                <div class="modal-stat-box">
+                    <div class="modal-stat-label">Daily Low</div>
+                    <div class="modal-stat-value" id="modal-stock-low">0,000.00</div>
+                </div>
+                <div class="modal-stat-box">
+                    <div class="modal-stat-label">52W High</div>
+                    <div class="modal-stat-value" id="modal-stock-52high">0,000.00</div>
+                </div>
+                <div class="modal-stat-box">
+                    <div class="modal-stat-label">52W Low</div>
+                    <div class="modal-stat-value" id="modal-stock-52low">0,000.00</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-info">
+                <h4 class="logo-text">APEX<span>EXCHANGE</span></h4>
+                <p>ApexExchange is a premium simulated trading and indices information platform inspired by national market architectures, designed with extreme responsive fidelity.</p>
+            </div>
+            <div class="footer-links">
+                <h5>Market Indices</h5>
+                <ul>
+                    <li><a href="index.html">NIFTY 50</a></li>
+                    <li><a href="index.html">NIFTY BANK</a></li>
+                    <li><a href="index.html">NIFTY IT</a></li>
+                    <li><a href="#">SENSEX Overview</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h5>Resources</h5>
+                <ul>
+                    <li><a href="about.html">About ApexExchange</a></li>
+                    <li><a href="services.html">Trading Services</a></li>
+                    <li><a href="services.html#calculator-anchor">Transaction Calculator</a></li>
+                    <li><a href="login.html">Investor Relations</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h5>Regulatory</h5>
+                <ul>
+                    <li><a href="#">SEBI Disclosures</a></li>
+                    <li><a href="#">Market Surveillance</a></li>
+                    <li><a href="#">Investor Protection</a></li>
+                    <li><a href="#">Terms & Privacy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>&copy; 2026 ApexExchange. All rights reserved. Designed for professional stock market references.</div>
+            <div style="margin-top: 5px;">Powered by Mock Real-Time Financial Feeds.</div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

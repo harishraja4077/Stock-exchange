@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Services & Transaction Calculator | ApexExchange</title>
+    <meta name="description" content="Explore ApexExchange trading segments, derivatives clearing, market data APIs, and estimate trading costs with our interactive transaction fee calculator.">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- 1. Top Scrolling Ticker Bar -->
+    <div class="ticker-container">
+        <div class="ticker-title">Live Market</div>
+        <div class="ticker-wrap">
+            <div class="ticker-scroll" id="ticker-scroll-feed">
+                <!-- Ticker items populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Header Navigation -->
+    <header>
+        <div class="logo-container">
+            <a href="index.html" class="logo-container">
+                <div class="logo-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                        <polyline points="17 6 23 6 23 12"></polyline>
+                    </svg>
+                </div>
+                <div class="logo-text">APEX<span>EXCHANGE</span></div>
+            </a>
+        </div>
+
+        <div class="search-wrapper">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="symbol-search" class="search-bar" placeholder="Search stocks (TCS, RELIANCE...)">
+            <div id="search-dropdown" class="search-results"></div>
+        </div>
+
+        <nav>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="about.html">About Us</a>
+                <a href="services.html" class="active">Services</a>
+            </div>
+            <div class="market-status">
+                <span class="status-dot"></span>
+                <span>MARKET OPEN</span>
+            </div>
+            <a href="login.html" class="btn-login">Client Portal</a>
+        </nav>
+
+        <div class="mobile-toggle" id="mobile-nav-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </header>
+
+    <!-- Mobile Drawer Menu -->
+    <div class="mobile-nav" id="mobile-menu-drawer">
+        <div class="mobile-nav-links">
+            <a href="index.html">Home</a>
+            <a href="about.html">About Us</a>
+            <a href="services.html" class="active">Services</a>
+            <a href="login.html">Client Portal</a>
+        </div>
+    </div>
+
+    <!-- 3. Services Page Content -->
+    <main class="container">
+        
+        <!-- Intro Hero -->
+        <section class="services-intro">
+            <h1 class="text-gradient">Core Market Infrastructures</h1>
+            <p>ApexExchange operates multi-segment asset listings, institutional clearing engines, and algorithmic low-latency order execution pipelines.</p>
+        </section>
+
+        <!-- Services Grid -->
+        <section class="services-grid">
+            
+            <div class="service-card glass-panel glow-hover">
+                <div class="service-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                </div>
+                <h3>Equity Trading</h3>
+                <p>Fully electronic trading in corporate equities, Exchange Traded Funds (ETFs), Real Estate Investment Trusts (REITs), and government debt instruments.</p>
+            </div>
+
+            <div class="service-card glass-panel glow-hover">
+                <div class="service-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+                        <path d="M12 6v6l4 2"></path>
+                    </svg>
+                </div>
+                <h3>Derivatives Market</h3>
+                <p>Advanced index futures (Nifty 50, Nifty Bank), equity options, commodity derivatives, and currency hedging instruments with high liquid execution.</p>
+            </div>
+
+            <div class="service-card glass-panel glow-hover">
+                <div class="service-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                </div>
+                <h3>Clearing & Settlement</h3>
+                <p>Operated via our Clearing Corporation. We guarantee trade completions, eliminate counterparty defaults, and manage risk through robust collateral pools.</p>
+            </div>
+
+            <div class="service-card glass-panel glow-hover">
+                <div class="service-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                        <polyline points="2 17 12 22 22 17"></polyline>
+                        <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                </div>
+                <h3>Market Data APIs</h3>
+                <p>Ultra-low latency UDP multicast feeds, WebSocket streaming data, historical tick-by-tick records, and regulatory compliance API connections.</p>
+            </div>
+
+        </section>
+
+        <!-- Transaction Fee Calculator Section -->
+        <section class="calculator-section" id="calculator-anchor">
+            <h2>Transaction Fee Calculator</h2>
+            <p style="text-align: center; color: var(--text-secondary); max-width: 600px; margin: -20px auto 40px auto; font-size: 0.9rem;">Estimate your total exchange fees, securities transaction tax (STT), clearing charges, and SEBI regulatory fees instantly.</p>
+            
+            <div class="calc-grid">
+                
+                <!-- Input Parameters -->
+                <div class="calc-form glass-panel">
+                    <div class="form-group">
+                        <label>Asset Class Segment</label>
+                        <div class="asset-buttons">
+                            <button type="button" class="asset-btn active" data-segment="delivery">Equity Delivery</button>
+                            <button type="button" class="asset-btn" data-segment="intraday">Equity Intraday</button>
+                            <button type="button" class="asset-btn" data-segment="futures">Equity Futures</button>
+                            <button type="button" class="asset-btn" data-segment="options">Equity Options</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 30px;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <label for="turnover-amount">Trade Turnover Amount</label>
+                            <span style="font-size: 0.85rem; font-weight: 700; color: var(--accent-blue);" id="calc-slider-value">₹ 5,00,000</span>
+                        </div>
+                        <div class="input-container" style="margin-top: 10px;">
+                            <span class="input-symbol">₹</span>
+                            <input type="number" id="turnover-amount" class="calc-input" value="500000" min="1000" max="10000000" step="5000">
+                        </div>
+                        <input type="range" id="turnover-slider" class="range-slider" min="1000" max="10000000" step="5000" value="500000">
+                    </div>
+                </div>
+
+                <!-- Fee Breakdown Panel -->
+                <div class="calc-results glass-panel">
+                    <h3 style="font-size: 1.15rem; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">Fee Structure Breakdown</h3>
+                    
+                    <div class="result-row">
+                        <span style="color: var(--text-secondary);">Exchange Transaction Charges</span>
+                        <span id="fee-exchange" style="font-family: monospace; font-weight: 600;">₹ 17.25</span>
+                    </div>
+                    <div class="result-row">
+                        <span style="color: var(--text-secondary);">Securities Transaction Tax (STT)</span>
+                        <span id="fee-stt" style="font-family: monospace; font-weight: 600;">₹ 500.00</span>
+                    </div>
+                    <div class="result-row">
+                        <span style="color: var(--text-secondary);">SEBI Turnover Fees</span>
+                        <span id="fee-sebi" style="font-family: monospace; font-weight: 600;">₹ 0.50</span>
+                    </div>
+                    <div class="result-row">
+                        <span style="color: var(--text-secondary);">IPFT Regulatory Surcharge</span>
+                        <span id="fee-ipft" style="font-family: monospace; font-weight: 600;">₹ 0.05</span>
+                    </div>
+                    <div class="result-row">
+                        <span style="color: var(--text-secondary);">Integrated Brokerage (Est)</span>
+                        <span id="fee-brokerage" style="font-family: monospace; font-weight: 600;">₹ 20.00</span>
+                    </div>
+                    
+                    <div class="result-total">
+                        <span>Total Regulatory Cost</span>
+                        <span class="total-amount" id="fee-total">₹ 537.80</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Detailed Stock Modal (Shared) -->
+    <div id="stock-modal" class="modal-overlay">
+        <div class="modal-content glass-panel">
+            <span class="modal-close" id="modal-close-btn">&times;</span>
+            <div class="modal-header">
+                <h3 id="modal-stock-title">Stock Details</h3>
+                <span class="modal-name" id="modal-stock-subtitle">Company Full Name</span>
+            </div>
+            <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 15px 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div>
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">Last Traded Price</span>
+                    <h2 style="font-size: 2.2rem; font-family: monospace; font-weight: 800;" id="modal-stock-ltp">₹0,000.00</h2>
+                </div>
+                <div style="text-align: right;">
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">Change (%)</span>
+                    <h3 id="modal-stock-change" style="font-size: 1.4rem; font-family: monospace;">+0.00 (+0.00%)</h3>
+                </div>
+            </div>
+            <div class="modal-stats">
+                <div class="modal-stat-box">
+                    <div class="modal-stat-label">Prev Close</div>
+                    <div class="modal-stat-value" id="modal-stock-prev">0,000.00</div>
+                </div>
+                <div class="modal-stat-box">
+                    <div class="modal-stat-label">Open</div>
+                    <div class="modal-stat-value" id="modal-stock-open">0,000.00</div>
+                </div>
+                <div class="modal-stat-box">
+                    <div class="modal-stat-label">Daily High</div>
+                    <div class="modal-stat-value" id="modal-stock-high">0,000.00</div>
+                </div>
+                <div class="modal-stat-box">
+                    <div class="modal-stat-label">Daily Low</div>
+                    <div class="modal-stat-value" id="modal-stock-low">0,000.00</div>
+                </div>
+                <div class="modal-stat-box">
+                    <div class="modal-stat-label">52W High</div>
+                    <div class="modal-stat-value" id="modal-stock-52high">0,000.00</div>
+                </div>
+                <div class="modal-stat-box">
+                    <div class="modal-stat-label">52W Low</div>
+                    <div class="modal-stat-value" id="modal-stock-52low">0,000.00</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-info">
+                <h4 class="logo-text">APEX<span>EXCHANGE</span></h4>
+                <p>ApexExchange is a premium simulated trading and indices information platform inspired by national market architectures, designed with extreme responsive fidelity.</p>
+                <div class="footer-social">
+                    <a href="#" class="social-icon">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
+                    </a>
+                    <a href="#" class="social-icon">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                    </a>
+                    <a href="#" class="social-icon">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204 .013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    </a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h5>Market Indices</h5>
+                <ul>
+                    <li><a href="index.html">NIFTY 50</a></li>
+                    <li><a href="index.html">NIFTY BANK</a></li>
+                    <li><a href="index.html">NIFTY IT</a></li>
+                    <li><a href="#">SENSEX Overview</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h5>Resources</h5>
+                <ul>
+                    <li><a href="about.html">About ApexExchange</a></li>
+                    <li><a href="services.html">Trading Services</a></li>
+                    <li><a href="services.html#calculator-anchor">Transaction Calculator</a></li>
+                    <li><a href="login.html">Investor Relations</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h5>Regulatory</h5>
+                <ul>
+                    <li><a href="#">SEBI Disclosures</a></li>
+                    <li><a href="#">Market Surveillance</a></li>
+                    <li><a href="#">Investor Protection</a></li>
+                    <li><a href="#">Terms & Privacy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>&copy; 2026 ApexExchange. All rights reserved. Designed for professional stock market references.</div>
+            <div style="margin-top: 5px;">Powered by Mock Real-Time Financial Feeds.</div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
