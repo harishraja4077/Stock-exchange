@@ -1,5 +1,5 @@
 /* ==========================================
-   APEXEXCHANGE JAVASCRIPT ENGINE
+   STACKLY JAVASCRIPT ENGINE
    ========================================== */
 
 // 1. MOCK FINANCIAL DATABASE
@@ -79,6 +79,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (document.getElementById("login-form-submit")) {
         initLoginPortal();
+    }
+    if (document.getElementById("investor-dashboard-anchor")) {
+        initInvestorDashboard();
+    }
+    if (document.getElementById("corporate-dashboard-anchor")) {
+        initCorporateDashboard();
+    }
+    if (document.getElementById("market-page-anchor")) {
+        initMarketPage();
+    }
+    if (document.getElementById("stock-detail-anchor")) {
+        initStockDetailPage();
+    }
+    if (document.getElementById("register-form-submit")) {
+        initRegisterForm();
     }
 });
 
@@ -875,10 +890,860 @@ function initLoginPortal() {
                 submitBtn.disabled = true;
                 
                 setTimeout(() => {
-                    alert(`Welcome to ApexExchange! Successfully authenticated account: ${clientVal}`);
-                    window.location.href = "index.html";
+                    alert(`Welcome to Stackly! Successfully authenticated account: ${clientVal}`);
+                    if (isCorporate) {
+                        window.location.href = "coperate-dashboard.html";
+                    } else {
+                        window.location.href = "investor-dashboard.html";
+                    }
                 }, 1200);
             }
         });
     }
 }
+
+// ==========================================
+// 12. PORTFOLIO STATE MANAGEMENT (INVESTOR)
+// ==========================================
+function getPortfolioState() {
+    if (!sessionStorage.getItem("investor_holdings")) {
+        const defaultHoldings = [
+            { symbol: "RELIANCE", qty: 15, buyPrice: 2850.00 },
+            { symbol: "TCS", qty: 8, buyPrice: 3750.00 },
+            { symbol: "INFOSYS", qty: 25, buyPrice: 1440.00 },
+            { symbol: "HDFCBANK", qty: 40, buyPrice: 1520.00 }
+        ];
+        sessionStorage.setItem("investor_holdings", JSON.stringify(defaultHoldings));
+    }
+    if (!sessionStorage.getItem("investor_cash")) {
+        sessionStorage.setItem("investor_cash", "250000.00");
+    }
+    if (!sessionStorage.getItem("investor_transactions")) {
+        const defaultTx = [
+            { symbol: "RELIANCE", type: "BUY", qty: 15, price: 2850.00, time: "2026-06-19 14:32" },
+            { symbol: "TCS", type: "BUY", qty: 8, price: 3750.00, time: "2026-06-18 10:15" },
+            { symbol: "INFOSYS", type: "BUY", qty: 25, price: 1440.00, time: "2026-06-17 11:45" },
+            { symbol: "HDFCBANK", type: "BUY", qty: 40, price: 1520.00, time: "2026-06-16 09:20" }
+        ];
+        sessionStorage.setItem("investor_transactions", JSON.stringify(defaultTx));
+    }
+    return {
+        holdings: JSON.parse(sessionStorage.getItem("investor_holdings")),
+        cash: parseFloat(sessionStorage.getItem("investor_cash")),
+        transactions: JSON.parse(sessionStorage.getItem("investor_transactions"))
+    };
+}
+
+function updatePortfolioState(holdings, cash, transactions) {
+    sessionStorage.setItem("investor_holdings", JSON.stringify(holdings));
+    sessionStorage.setItem("investor_cash", cash.toFixed(2));
+    sessionStorage.setItem("investor_transactions", JSON.stringify(transactions));
+}
+
+// ==========================================
+// 13. INVESTOR DASHBOARD CONTROLLER
+// ==========================================
+function initInvestorDashboard() {
+    const state = getPortfolioState();
+    renderInvestorStats(state);
+    renderHoldingsTable(state.holdings);
+    renderTransactionsTable(state.transactions);
+    
+    // Quick buy/sell hooks in sidebar console
+    const symbolSelect = document.getElementById("inv-console-symbol");
+    const qtyInput = document.getElementById("inv-console-qty");
+    const valLabel = document.getElementById("inv-console-value");
+    const executeBtn = document.getElementById("inv-console-execute");
+    const typeTabs = document.querySelectorAll(".trade-tab-btn");
+    
+    let orderType = "BUY"; // default
+    
+    // Populate stock symbols dropdown
+    if (symbolSelect) {
+        symbolSelect.innerHTML = stockDatabase.map(stk => `
+            <option value="${stk.symbol}">${stk.symbol} (LTP: ₹${stk.price.toFixed(2)})</option>
+        `).join("");
+        
+        // Value sync
+        const updateVal = () => {
+            const sym = symbolSelect.value;
+            const qty = parseInt(qtyInput.value) || 0;
+            const stk = stockDatabase.find(s => s.symbol === sym);
+            if (stk) {
+                const totalVal = stk.price * qty;
+                valLabel.textContent = `₹ ${formatCurrency(totalVal, 2)}`;
+            }
+        };
+        
+        symbolSelect.addEventListener("change", updateVal);
+        qtyInput.addEventListener("input", updateVal);
+        updateVal();
+        
+        // Buy/Sell toggle tabs
+        typeTabs.forEach(tab => {
+            tab.addEventListener("click", () => {
+                typeTabs.forEach(t => t.classList.remove("active"));
+                tab.classList.add("active");
+                orderType = tab.getAttribute("data-type");
+                executeBtn.textContent = orderType === "BUY" ? "Place Buy Order" : "Place Sell Order";
+                executeBtn.className = `btn-execute ${orderType === "BUY" ? "buy" : "sell"}`;
+            });
+        });
+        
+        // Execute trade
+        executeBtn.addEventListener("click", () => {
+            const sym = symbolSelect.value;
+            const qty = parseInt(qtyInput.value) || 0;
+            if (qty <= 0) {
+                alert("Please enter a valid quantity.");
+                return;
+            }
+            
+            const stk = stockDatabase.find(s => s.symbol === sym);
+            if (!stk) return;
+            
+            const state = getPortfolioState();
+            const totalCost = stk.price * qty;
+            
+            if (orderType === "BUY") {
+                if (state.cash < totalCost) {
+                    alert("Insufficient cash balance to complete this purchase.");
+                    return;
+                }
+                state.cash -= totalCost;
+                
+                // Add/Update Holdings
+                const existing = state.holdings.find(h => h.symbol === sym);
+                if (existing) {
+                    const totalQty = existing.qty + qty;
+                    existing.buyPrice = ((existing.qty * existing.buyPrice) + totalCost) / totalQty;
+                    existing.qty = totalQty;
+                } else {
+                    state.holdings.push({ symbol: sym, qty, buyPrice: stk.price });
+                }
+            } else {
+                const existing = state.holdings.find(h => h.symbol === sym);
+                if (!existing || existing.qty < qty) {
+                    alert("You do not hold enough shares to complete this sale.");
+                    return;
+                }
+                state.cash += totalCost;
+                existing.qty -= qty;
+                
+                // Remove if 0
+                if (existing.qty === 0) {
+                    state.holdings = state.holdings.filter(h => h.symbol !== sym);
+                }
+            }
+            
+            // Log transaction
+            const now = new Date();
+            const timeStr = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+            state.transactions.unshift({ symbol: sym, type: orderType, qty, price: stk.price, time: timeStr });
+            
+            // Save state
+            updatePortfolioState(state.holdings, state.cash, state.transactions);
+            
+            // Re-render
+            renderInvestorStats(state);
+            renderHoldingsTable(state.holdings);
+            renderTransactionsTable(state.transactions);
+            qtyInput.value = "";
+            updateVal();
+            
+            alert(`Order executed successfully! ${orderType} ${qty} ${sym} shares.`);
+        });
+    }
+    
+    // Live update hook for statistics & table values during simulation
+    setInterval(() => {
+        const state = getPortfolioState();
+        renderInvestorStats(state);
+        updateLiveHoldingsPL();
+    }, 2500);
+}
+
+function renderInvestorStats(state) {
+    const netWorthEl = document.getElementById("inv-net-worth");
+    const portfolioEl = document.getElementById("inv-portfolio-val");
+    const cashEl = document.getElementById("inv-cash-balance");
+    const plEl = document.getElementById("inv-total-pl");
+    
+    if (!netWorthEl) return;
+    
+    let holdingsVal = 0;
+    let originalCost = 0;
+    
+    state.holdings.forEach(h => {
+        const dbStock = stockDatabase.find(s => s.symbol === h.symbol);
+        if (dbStock) {
+            holdingsVal += dbStock.price * h.qty;
+        }
+        originalCost += h.buyPrice * h.qty;
+    });
+    
+    const netWorth = state.cash + holdingsVal;
+    const totalPL = holdingsVal - originalCost;
+    const plPct = originalCost > 0 ? (totalPL / originalCost) * 100 : 0.00;
+    
+    netWorthEl.textContent = `₹ ${formatCurrency(netWorth, 2)}`;
+    portfolioEl.textContent = `₹ ${formatCurrency(holdingsVal, 2)}`;
+    cashEl.textContent = `₹ ${formatCurrency(state.cash, 2)}`;
+    
+    const sign = totalPL >= 0 ? "+" : "";
+    const colorClass = totalPL >= 0 ? "text-up" : "text-down";
+    const badgeClass = totalPL >= 0 ? "bg-up-badge" : "bg-down-badge";
+    
+    plEl.className = `dashboard-stat-subtext ${colorClass}`;
+    plEl.innerHTML = `<span class="${badgeClass}">${sign}${plPct.toFixed(2)}%</span> <span>${sign}₹${formatCurrency(totalPL, 2)} All Time</span>`;
+}
+
+function renderHoldingsTable(holdings) {
+    const tbody = document.getElementById("holdings-table-body");
+    if (!tbody) return;
+    
+    if (holdings.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px 10px;">No portfolio holdings found. Add securities using the Order entry console.</td></tr>`;
+        return;
+    }
+    
+    tbody.innerHTML = holdings.map(h => {
+        const stk = stockDatabase.find(s => s.symbol === h.symbol);
+        const ltp = stk ? stk.price : h.buyPrice;
+        const currentVal = ltp * h.qty;
+        const cost = h.buyPrice * h.qty;
+        const pl = currentVal - cost;
+        const plPct = (pl / cost) * 100;
+        const sign = pl >= 0 ? "+" : "";
+        const textClass = pl >= 0 ? "text-up" : "text-down";
+        
+        return `
+            <tr onclick="window.location.href='stock.html?symbol=${h.symbol}'" style="cursor: pointer;">
+                <td>
+                    <span class="stock-symbol">${h.symbol}</span>
+                    <span class="company-name">${stk ? stk.name : ""}</span>
+                </td>
+                <td style="font-family: monospace; font-weight: 600;">${h.qty}</td>
+                <td style="font-family: monospace;">₹${h.buyPrice.toFixed(2)}</td>
+                <td style="font-family: monospace; font-weight: 700;" id="holdings-ltp-${h.symbol}">₹${ltp.toFixed(2)}</td>
+                <td style="font-family: monospace; font-weight: 700;" id="holdings-val-${h.symbol}">₹${formatCurrency(currentVal, 2)}</td>
+                <td class="${textClass}" style="font-family: monospace; font-weight: 700;" id="holdings-pl-${h.symbol}">
+                    ${sign}₹${formatCurrency(pl, 2)}
+                </td>
+                <td id="holdings-plpct-${h.symbol}">
+                    <span class="${pl >= 0 ? 'bg-up-badge' : 'bg-down-badge'}">${sign}${plPct.toFixed(2)}%</span>
+                </td>
+            </tr>
+        `;
+    }).join("");
+}
+
+function updateLiveHoldingsPL() {
+    const state = getPortfolioState();
+    state.holdings.forEach(h => {
+        const stk = stockDatabase.find(s => s.symbol === h.symbol);
+        if (!stk) return;
+        
+        const ltpEl = document.getElementById(`holdings-ltp-${h.symbol}`);
+        const valEl = document.getElementById(`holdings-val-${h.symbol}`);
+        const plEl = document.getElementById(`holdings-pl-${h.symbol}`);
+        const plpctEl = document.getElementById(`holdings-plpct-${h.symbol}`);
+        
+        if (ltpEl && valEl && plEl && plpctEl) {
+            const currentVal = stk.price * h.qty;
+            const cost = h.buyPrice * h.qty;
+            const pl = currentVal - cost;
+            const plPct = (pl / cost) * 100;
+            const sign = pl >= 0 ? "+" : "";
+            const textClass = pl >= 0 ? "text-up" : "text-down";
+            const badgeClass = pl >= 0 ? "bg-up-badge" : "bg-down-badge";
+            
+            ltpEl.textContent = `₹${stk.price.toFixed(2)}`;
+            valEl.textContent = `₹${formatCurrency(currentVal, 2)}`;
+            plEl.textContent = `${sign}₹${formatCurrency(pl, 2)}`;
+            plEl.className = `${textClass}`;
+            plpctEl.innerHTML = `<span class="${badgeClass}">${sign}${plPct.toFixed(2)}%</span>`;
+        }
+    });
+}
+
+function renderTransactionsTable(transactions) {
+    const tbody = document.getElementById("transactions-list-body");
+    if (!tbody) return;
+    
+    if (transactions.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px 10px;">No transaction logs available.</td></tr>`;
+        return;
+    }
+    
+    tbody.innerHTML = transactions.slice(0, 10).map(t => {
+        const typeClass = t.type === "BUY" ? "text-up" : "text-down";
+        const val = t.price * t.qty;
+        
+        return `
+            <tr>
+                <td style="font-size: 0.8rem; color: var(--text-secondary);">${t.time}</td>
+                <td style="font-weight: 700;">${t.symbol}</td>
+                <td><span style="font-weight: 800; font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; background: ${t.type==='BUY'?'var(--color-up-bg)':'var(--color-down-bg)'}" class="${typeClass}">${t.type}</span></td>
+                <td style="font-family: monospace;">${t.qty} @ ₹${t.price.toFixed(2)}</td>
+                <td style="font-family: monospace; font-weight: 700;">₹${formatCurrency(val, 2)}</td>
+            </tr>
+        `;
+    }).join("");
+}
+
+// ==========================================
+// 14. CORPORATE DASHBOARD CONTROLLER
+// ==========================================
+function getCorporateFilings() {
+    if (!sessionStorage.getItem("corporate_filings")) {
+        const defaultFilings = [
+            { title: "Financial Results for Q4 FY25-26", category: "Financials", status: "VERIFIED", date: "2026-05-15" },
+            { title: "Shareholding Pattern for Period Ending March 2026", category: "Disclosures", status: "VERIFIED", date: "2026-04-10" },
+            { title: "Outcome of Board Meeting held on April 2nd", category: "Board Meet", status: "VERIFIED", date: "2026-04-02" }
+        ];
+        sessionStorage.setItem("corporate_filings", JSON.stringify(defaultFilings));
+    }
+    return JSON.parse(sessionStorage.getItem("corporate_filings"));
+}
+
+function initCorporateDashboard() {
+    renderFilingsList();
+    
+    // Live update company share stats (We use RELIANCE as corporate database entity)
+    const stockPriceEl = document.getElementById("corp-share-price");
+    const stockMarketcapEl = document.getElementById("corp-market-cap");
+    const stockChangeEl = document.getElementById("corp-price-change");
+    
+    const updateCorpStats = () => {
+        const stk = stockDatabase.find(s => s.symbol === "RELIANCE");
+        if (stk && stockPriceEl) {
+            stockPriceEl.textContent = `₹${stk.price.toFixed(2)}`;
+            
+            // Mock shares outstanding = 676 crore shares
+            const marketCapCr = (stk.price * 6760000000) / 10000000;
+            stockMarketcapEl.textContent = `₹ ${formatCurrency(marketCapCr, 1)} Cr`;
+            
+            const change = stk.price - stk.prevClose;
+            const changePct = (change / stk.prevClose) * 100;
+            const sign = change >= 0 ? "+" : "";
+            const colorClass = change >= 0 ? "text-up" : "text-down";
+            const badgeClass = change >= 0 ? "bg-up-badge" : "bg-down-badge";
+            
+            stockChangeEl.className = `dashboard-stat-subtext ${colorClass}`;
+            stockChangeEl.innerHTML = `<span class="${badgeClass}">${sign}${changePct.toFixed(2)}%</span> <span>Daily Change</span>`;
+        }
+    };
+    updateCorpStats();
+    setInterval(updateCorpStats, 2500);
+    
+    // Setup new regulatory filing submit handler
+    const form = document.getElementById("new-filing-form");
+    if (form) {
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const title = document.getElementById("filing-title").value.trim();
+            const category = document.getElementById("filing-category").value;
+            
+            if (!title) return;
+            
+            const filings = getCorporateFilings();
+            const now = new Date();
+            const dateStr = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')}`;
+            
+            filings.unshift({ title, category, status: "PENDING", date: dateStr });
+            sessionStorage.setItem("corporate_filings", JSON.stringify(filings));
+            
+            // Add announcement to the global feed so it shows up in sidebar
+            announcements.unshift({ tag: category, text: `RELIANCE: ${title}`, time: "Just now" });
+            if (typeof renderAnnouncements === "function") {
+                renderAnnouncements();
+            }
+            
+            renderFilingsList();
+            form.reset();
+            alert("Disclosure filing submitted successfully to exchange clearing surveillance division.");
+        });
+    }
+}
+
+function renderFilingsList() {
+    const list = document.getElementById("corp-filings-list");
+    if (!list) return;
+    
+    const filings = getCorporateFilings();
+    
+    list.innerHTML = filings.map(f => `
+        <div class="filing-item">
+            <div>
+                <span class="announce-tag" style="margin-bottom:4px; font-size:0.6rem;">${f.category}</span>
+                <h4 style="font-size:0.9rem; margin-top:2px;">${f.title}</h4>
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Submitted: ${f.date}</div>
+            </div>
+            <span class="filing-status ${f.status.toLowerCase()}">${f.status}</span>
+        </div>
+    `).join("");
+}
+
+// ==========================================
+// 15. MARKET PORTAL CONTROLLER
+// ==========================================
+function initMarketPage() {
+    renderMarketTable("all");
+    renderAdvanceDecline();
+    
+    // Movers Tab Menu
+    document.querySelectorAll(".mover-tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".mover-tab-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            const category = btn.getAttribute("data-tab");
+            renderMarketTable(category);
+        });
+    });
+    
+    // Live update calculations during fluctuation
+    setInterval(() => {
+        renderAdvanceDecline();
+        const activeTab = document.querySelector(".mover-tab-btn.active");
+        if (activeTab) {
+            renderMarketTable(activeTab.getAttribute("data-tab"));
+        }
+        updateMarketHeatmap();
+    }, 2500);
+}
+
+function renderAdvanceDecline() {
+    const barAdvances = document.getElementById("ad-advances");
+    const barDeclines = document.getElementById("ad-declines");
+    const labelAdvances = document.getElementById("ad-label-advances");
+    const labelDeclines = document.getElementById("ad-label-declines");
+    
+    if (!barAdvances) return;
+    
+    let advances = 0;
+    let declines = 0;
+    
+    stockDatabase.forEach(stk => {
+        if (stk.price >= stk.prevClose) {
+            advances++;
+        } else {
+            declines++;
+        }
+    });
+    
+    const total = advances + declines;
+    const advPct = (advances / total) * 100;
+    const decPct = (declines / total) * 100;
+    
+    barAdvances.style.width = `${advPct}%`;
+    barDeclines.style.width = `${decPct}%`;
+    
+    labelAdvances.textContent = `${advances} Advances (${advPct.toFixed(0)}%)`;
+    labelDeclines.textContent = `${declines} Declines (${decPct.toFixed(0)}%)`;
+}
+
+function updateMarketHeatmap() {
+    // IT sector averages TCS + INFOSYS
+    const tcs = stockDatabase.find(s => s.symbol === "TCS");
+    const infy = stockDatabase.find(s => s.symbol === "INFOSYS");
+    if (tcs && infy) {
+        const avgItPct = (((tcs.price - tcs.prevClose)/tcs.prevClose) + ((infy.price - infy.prevClose)/infy.prevClose)) / 2 * 100;
+        setHeatmapCard("heat-it", avgItPct);
+    }
+    
+    // Banking: HDFCBANK, ICICIBANK, SBIN
+    const hdfc = stockDatabase.find(s => s.symbol === "HDFCBANK");
+    const icici = stockDatabase.find(s => s.symbol === "ICICIBANK");
+    const sbin = stockDatabase.find(s => s.symbol === "SBIN");
+    if (hdfc && icici && sbin) {
+        const avgBkPct = (((hdfc.price - hdfc.prevClose)/hdfc.prevClose) + ((icici.price - icici.prevClose)/icici.prevClose) + ((sbin.price - sbin.prevClose)/sbin.prevClose)) / 3 * 100;
+        setHeatmapCard("heat-banking", avgBkPct);
+    }
+    
+    // Energy: RELIANCE
+    const reliance = stockDatabase.find(s => s.symbol === "RELIANCE");
+    if (reliance) {
+        const energyPct = ((reliance.price - reliance.prevClose)/reliance.prevClose) * 100;
+        setHeatmapCard("heat-energy", energyPct);
+    }
+    
+    // Consumer Goods: ITC, HINDUNILVR
+    const itc = stockDatabase.find(s => s.symbol === "ITC");
+    const hul = stockDatabase.find(s => s.symbol === "HINDUNILVR");
+    if (itc && hul) {
+        const avgCgPct = (((itc.price - itc.prevClose)/itc.prevClose) + ((hul.price - hul.prevClose)/hul.prevClose)) / 2 * 100;
+        setHeatmapCard("heat-fmcg", avgCgPct);
+    }
+    
+    // Infrastructure: LT
+    const lt = stockDatabase.find(s => s.symbol === "LT");
+    if (lt) {
+        const infraPct = ((lt.price - lt.prevClose)/lt.prevClose) * 100;
+        setHeatmapCard("heat-infra", infraPct);
+    }
+}
+
+function setHeatmapCard(id, value) {
+    const card = document.getElementById(id);
+    if (!card) return;
+    
+    const sign = value >= 0 ? "+" : "";
+    const colorClass = value >= 0 ? "up" : "down";
+    const textClass = value >= 0 ? "text-up" : "text-down";
+    
+    card.className = `heatmap-card ${colorClass}`;
+    card.querySelector(".change").className = `change ${textClass}`;
+    card.querySelector(".change").textContent = `${sign}${value.toFixed(2)}%`;
+}
+
+function renderMarketTable(category) {
+    const tbody = document.getElementById("market-table-body");
+    if (!tbody) return;
+    
+    let sorted = [...stockDatabase];
+    
+    if (category === "gainers") {
+        sorted = sorted.filter(s => s.price > s.prevClose).sort((a, b) => {
+            const chgA = ((a.price - a.prevClose) / a.prevClose);
+            const chgB = ((b.price - b.prevClose) / b.prevClose);
+            return chgB - chgA;
+        });
+    } else if (category === "losers") {
+        sorted = sorted.filter(s => s.price < s.prevClose).sort((a, b) => {
+            const chgA = ((a.price - a.prevClose) / a.prevClose);
+            const chgB = ((b.price - b.prevClose) / b.prevClose);
+            return chgA - chgB;
+        });
+    } else if (category === "volume") {
+        sorted.sort((a, b) => b.volume - a.volume);
+    }
+    
+    if (sorted.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 20px 10px;">No stocks matching category criteria.</td></tr>`;
+        return;
+    }
+    
+    tbody.innerHTML = sorted.map(stk => {
+        const changeVal = stk.price - stk.prevClose;
+        const changePct = (changeVal / stk.prevClose) * 100;
+        const sign = changeVal >= 0 ? "+" : "";
+        const textClass = changeVal >= 0 ? "text-up" : "text-down";
+        const badgeClass = changeVal >= 0 ? "bg-up-badge" : "bg-down-badge";
+        
+        return `
+            <tr onclick="window.location.href='stock.html?symbol=${stk.symbol}'" style="cursor: pointer;">
+                <td>
+                    <span class="stock-symbol">${stk.symbol}</span>
+                    <span class="company-name">${stk.name}</span>
+                </td>
+                <td style="font-family: monospace; font-weight: 700;">₹${formatCurrency(stk.price, 2)}</td>
+                <td class="${textClass}" style="font-family: monospace;">${sign}${formatCurrency(changeVal, 2)}</td>
+                <td><span class="${badgeClass}">${sign}${changePct.toFixed(2)}%</span></td>
+                <td style="font-family: monospace;">₹${formatCurrency(stk.prevClose, 2)}</td>
+                <td style="font-family: monospace;">₹${formatCurrency(stk.high, 2)} / ₹${formatCurrency(stk.low, 2)}</td>
+                <td style="font-family: monospace;">${stk.volume.toFixed(1)} L</td>
+            </tr>
+        `;
+    }).join("");
+}
+
+// ==========================================
+// 16. STOCK DETAIL & CALCULATOR CONTROLLER
+// ==========================================
+function initStockDetailPage() {
+    // Parse query symbol
+    const params = new URLSearchParams(window.location.search);
+    const sym = (params.get("symbol") || "RELIANCE").toUpperCase();
+    
+    let stk = stockDatabase.find(s => s.symbol === sym);
+    if (!stk) stk = stockDatabase[0];
+    
+    renderStockDetails(stk);
+    drawStockChart(stk);
+    
+    // Hook quantity calculations
+    const qtyInput = document.getElementById("trade-qty");
+    const costLtpEl = document.getElementById("trade-est-price");
+    const costBrokerageEl = document.getElementById("trade-est-charges");
+    const costTotalEl = document.getElementById("trade-est-total");
+    const executeBtn = document.getElementById("trade-btn-execute");
+    const typeTabs = document.querySelectorAll(".trade-tab-btn");
+    
+    let tradeMode = "BUY"; // default
+    
+    const syncCalculations = () => {
+        const qty = parseInt(qtyInput.value) || 0;
+        const ltpCost = stk.price * qty;
+        
+        // Brokerage rules: 0.05% capped at ₹20 per side
+        const brokerage = Math.min(ltpCost * 0.0005, 20.00);
+        const total = tradeMode === "BUY" ? (ltpCost + brokerage) : (ltpCost - brokerage);
+        
+        costLtpEl.textContent = `₹${formatCurrency(ltpCost, 2)}`;
+        costBrokerageEl.textContent = `₹${formatCurrency(brokerage, 2)}`;
+        costTotalEl.textContent = `₹${formatCurrency(Math.max(total, 0), 2)}`;
+    };
+    
+    if (qtyInput) {
+        qtyInput.addEventListener("input", syncCalculations);
+        
+        typeTabs.forEach(tab => {
+            tab.addEventListener("click", () => {
+                typeTabs.forEach(t => t.classList.remove("active"));
+                tab.classList.add("active");
+                tradeMode = tab.getAttribute("data-type");
+                executeBtn.textContent = tradeMode === "BUY" ? "Place Buy Order" : "Place Sell Order";
+                executeBtn.className = `btn-execute ${tradeMode === "BUY" ? "buy" : "sell"}`;
+                syncCalculations();
+            });
+        });
+        
+        executeBtn.addEventListener("click", () => {
+            const qty = parseInt(qtyInput.value) || 0;
+            if (qty <= 0) {
+                alert("Please enter a valid stock quantity.");
+                return;
+            }
+            
+            const state = getPortfolioState();
+            const ltpCost = stk.price * qty;
+            const brokerage = Math.min(ltpCost * 0.0005, 20.00);
+            
+            if (tradeMode === "BUY") {
+                const total = ltpCost + brokerage;
+                if (state.cash < total) {
+                    alert("Insufficient cash balance in your brokerage account.");
+                    return;
+                }
+                state.cash -= total;
+                const existing = state.holdings.find(h => h.symbol === stk.symbol);
+                if (existing) {
+                    const originalCostVal = existing.qty * existing.buyPrice;
+                    existing.qty += qty;
+                    existing.buyPrice = (originalCostVal + ltpCost) / existing.qty;
+                } else {
+                    state.holdings.push({ symbol: stk.symbol, qty, buyPrice: stk.price });
+                }
+            } else {
+                const existing = state.holdings.find(h => h.symbol === stk.symbol);
+                if (!existing || existing.qty < qty) {
+                    alert("You do not hold enough shares of this security to complete this sale.");
+                    return;
+                }
+                const total = ltpCost - brokerage;
+                state.cash += total;
+                existing.qty -= qty;
+                if (existing.qty === 0) {
+                    state.holdings = state.holdings.filter(h => h.symbol !== stk.symbol);
+                }
+            }
+            
+            // Log transaction
+            const now = new Date();
+            const timeStr = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+            state.transactions.unshift({ symbol: stk.symbol, type: tradeMode, qty, price: stk.price, time: timeStr });
+            
+            updatePortfolioState(state.holdings, state.cash, state.transactions);
+            qtyInput.value = "";
+            syncCalculations();
+            
+            alert(`Trade executed successfully! ${tradeMode} ${qty} shares of ${stk.symbol}.`);
+        });
+    }
+    
+    // Live fluctuations updates for detailing
+    setInterval(() => {
+        const activeStk = stockDatabase.find(s => s.symbol === stk.symbol);
+        if (activeStk) {
+            renderStockDetails(activeStk);
+            syncCalculations();
+        }
+    }, 2500);
+}
+
+function renderStockDetails(stk) {
+    const symbolEl = document.getElementById("stock-detail-symbol");
+    const nameEl = document.getElementById("stock-detail-name");
+    const ltpEl = document.getElementById("stock-detail-ltp");
+    const changeEl = document.getElementById("stock-detail-change");
+    
+    const prevEl = document.getElementById("stock-detail-prev");
+    const openEl = document.getElementById("stock-detail-open");
+    const highEl = document.getElementById("stock-detail-high");
+    const lowEl = document.getElementById("stock-detail-low");
+    const high52El = document.getElementById("stock-detail-52high");
+    const low52El = document.getElementById("stock-detail-52low");
+    const volEl = document.getElementById("stock-detail-volume");
+    
+    if (!symbolEl) return;
+    
+    symbolEl.textContent = stk.symbol;
+    nameEl.textContent = stk.name;
+    ltpEl.textContent = `₹${stk.price.toFixed(2)}`;
+    
+    const change = stk.price - stk.prevClose;
+    const changePct = (change / stk.prevClose) * 100;
+    const sign = change >= 0 ? "+" : "";
+    const colorClass = change >= 0 ? "text-up" : "text-down";
+    const badgeClass = change >= 0 ? "bg-up-badge" : "bg-down-badge";
+    
+    changeEl.className = `index-change-wrap ${colorClass}`;
+    changeEl.innerHTML = `<span>${sign}${change.toFixed(2)}</span> <span class="${badgeClass}">${sign}${changePct.toFixed(2)}%</span>`;
+    
+    prevEl.textContent = formatCurrency(stk.prevClose, 2);
+    openEl.textContent = formatCurrency(stk.open, 2);
+    highEl.textContent = formatCurrency(stk.high, 2);
+    lowEl.textContent = formatCurrency(stk.low, 2);
+    high52El.textContent = formatCurrency(stk.high52, 2);
+    low52El.textContent = formatCurrency(stk.low52, 2);
+    volEl.textContent = `${stk.volume.toFixed(1)} Lakhs`;
+}
+
+function drawStockChart(stk) {
+    const svg = document.getElementById("stock-svg-chart");
+    if (!svg) return;
+    
+    const viewport = document.getElementById("stock-chart-viewport");
+    const width = viewport.clientWidth;
+    const height = 320;
+    
+    const data = stk.trend; // uses the 7-day trend array
+    const minVal = Math.min(...data);
+    const maxVal = Math.max(...data);
+    
+    const buffer = (maxVal - minVal) * 0.15 || 5;
+    const yMin = minVal - buffer;
+    const yMax = maxVal + buffer;
+    
+    // Labels
+    document.getElementById("sy-label-max").textContent = formatCurrency(yMax, 1);
+    document.getElementById("sy-label-mid").textContent = formatCurrency((yMax + yMin) / 2, 1);
+    document.getElementById("sy-label-min").textContent = formatCurrency(yMin, 1);
+    
+    const points = data.map((val, idx) => {
+        const x = (idx / (data.length - 1)) * width;
+        const y = height - ((val - yMin) / (yMax - yMin)) * (height - 30) - 15;
+        return { x, y, val };
+    });
+    
+    const isUp = data[data.length - 1] >= data[0];
+    const accentColor = isUp ? "var(--color-up)" : "var(--color-down)";
+    
+    let lineD = `M ${points[0].x} ${points[0].y}`;
+    for (let i = 1; i < points.length; i++) {
+        const cpX = points[i-1].x + (points[i].x - points[i-1].x) / 2;
+        lineD += ` C ${cpX} ${points[i-1].y}, ${cpX} ${points[i].y}, ${points[i].x} ${points[i].y}`;
+    }
+    const areaD = `${lineD} L ${width} ${height} L 0 ${height} Z`;
+    
+    svg.querySelector(".chart-path-area").setAttribute("d", areaD);
+    svg.querySelector(".chart-path-line").setAttribute("d", lineD);
+    svg.querySelector(".chart-path-line").style.stroke = accentColor;
+    
+    // Stop gradient colors
+    const stop0 = document.querySelector("#stock-chart-gradient stop[offset='0%']");
+    const stop1 = document.querySelector("#stock-chart-gradient stop[offset='100%']");
+    if (stop0 && stop1) {
+        stop0.setAttribute("stop-color", isUp ? "#10b981" : "#ef4444");
+        stop1.setAttribute("stop-color", isUp ? "#10b981" : "#ef4444");
+    }
+}
+
+// ==========================================
+// 17. CLIENT REGISTRATION MULTI-STEP FLOW
+// ==========================================
+function initRegisterForm() {
+    const pane1 = document.getElementById("pane-step-1");
+    const pane2 = document.getElementById("pane-step-2");
+    const pane3 = document.getElementById("pane-step-3");
+    
+    const dot1 = document.getElementById("dot-step-1");
+    const dot2 = document.getElementById("dot-step-2");
+    const dot3 = document.getElementById("dot-step-3");
+    
+    const progressFill = document.getElementById("progress-fill-line");
+    
+    const next1 = document.getElementById("btn-next-1");
+    const next2 = document.getElementById("btn-next-2");
+    
+    const prev2 = document.getElementById("btn-prev-2");
+    const prev3 = document.getElementById("btn-prev-3");
+    
+    const formSubmit = document.getElementById("register-form-submit");
+    
+    // Multi-step transitions
+    if (next1) {
+        next1.addEventListener("click", () => {
+            // Validate step 1 fields
+            const nameInput = document.getElementById("reg-name");
+            const emailInput = document.getElementById("reg-email");
+            if (!nameInput.value || !emailInput.value) {
+                alert("Please fill in all details before proceeding.");
+                return;
+            }
+            
+            pane1.classList.remove("active");
+            pane2.classList.add("active");
+            
+            dot1.className = "register-step-dot completed";
+            dot2.className = "register-step-dot active";
+            progressFill.style.width = "50%";
+        });
+    }
+    
+    if (next2) {
+        next2.addEventListener("click", () => {
+            const panInput = document.getElementById("reg-pan");
+            if (!panInput.value) {
+                alert("PAN Card / Tax identification details are required.");
+                return;
+            }
+            pane2.classList.remove("active");
+            pane3.classList.add("active");
+            
+            dot2.className = "register-step-dot completed";
+            dot3.className = "register-step-dot active";
+            progressFill.style.width = "100%";
+        });
+    }
+    
+    if (prev2) {
+        prev2.addEventListener("click", () => {
+            pane2.classList.remove("active");
+            pane1.classList.add("active");
+            
+            dot1.className = "register-step-dot active";
+            dot2.className = "register-step-dot";
+            progressFill.style.width = "0%";
+        });
+    }
+    
+    if (prev3) {
+        prev3.addEventListener("click", () => {
+            pane3.classList.remove("active");
+            pane2.classList.add("active");
+            
+            dot2.className = "register-step-dot active";
+            dot3.className = "register-step-dot";
+            progressFill.style.width = "50%";
+        });
+    }
+    
+    if (formSubmit) {
+        formSubmit.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const password = document.getElementById("reg-pass").value;
+            const pin = document.getElementById("reg-pin").value;
+            
+            if (password.length < 6 || pin.length !== 6) {
+                alert("Password must be 6+ characters and PIN exactly 6 digits.");
+                return;
+            }
+            
+            alert("Registration application submitted successfully! Redirecting to secure login.");
+            window.location.href = "login.html";
+        });
+    }
+}
+

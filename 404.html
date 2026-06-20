@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Halts | Stackly Exchange Group</title>
+    <meta name="description" content="The page you are looking for has been suspended, deleted, or does not exist on our servers. Please navigate back to the home market tracking board.">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- 1. Top Scrolling Ticker Bar -->
+    <div class="ticker-container">
+        <div class="ticker-title">Live Market</div>
+        <div class="ticker-wrap">
+            <div class="ticker-scroll" id="ticker-scroll-feed">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Header Navigation -->
+    <header>
+        <div class="logo-container">
+            <a href="index.html">
+                <img src="images/logo.webp" alt="Stackly Logo" class="logo-img">
+            </a>
+        </div>
+
+        <nav>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="about.html">About Us</a>
+                <a href="services.html">Services</a>
+            </div>
+            <a href="login.html" class="btn-login">Client Portal</a>
+        </nav>
+
+        <div class="mobile-toggle" id="mobile-nav-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </header>
+
+    <!-- Mobile Drawer Menu -->
+    <div class="mobile-nav" id="mobile-menu-drawer">
+        <div class="mobile-nav-links">
+            <a href="index.html">Home</a>
+            <a href="about.html">About Us</a>
+            <a href="services.html">Services</a>
+            <a href="login.html">Client Portal</a>
+        </div>
+    </div>
+
+    <!-- 3. Error Content -->
+    <main class="container">
+        <div class="error-404-container glass-panel glow-hover" style="margin: 40px auto; max-width: 800px;">
+            
+            <!-- Crashing Chart SVG Graphic -->
+            <svg class="error-graphic-svg" viewBox="0 0 300 200">
+                <!-- Grid Lines -->
+                <line x1="0" y1="40" x2="300" y2="40" class="error-grid-line"></line>
+                <line x1="0" y1="90" x2="300" y2="90" class="error-grid-line"></line>
+                <line x1="0" y1="140" x2="300" y2="140" class="error-grid-line"></line>
+                
+                <!-- Crashing Line -->
+                <path d="M 10 30 L 60 50 L 110 40 L 160 110 L 210 95 L 260 180" class="error-interactive-line error-glow-filter"></path>
+                
+                <!-- Fractures -->
+                <line x1="260" y1="180" x2="252" y2="195" stroke="var(--color-down)" stroke-width="2" opacity="0.8"></line>
+                <line x1="260" y1="180" x2="270" y2="190" stroke="var(--color-down)" stroke-width="2" opacity="0.8"></line>
+                
+                <!-- Indicator Dot -->
+                <circle cx="260" cy="180" r="5" fill="var(--color-down)"></circle>
+            </svg>
+
+            <div class="error-code">404</div>
+            <h1 class="error-subtitle text-gradient">Market Connection Halts</h1>
+            <p class="error-text">The requested security identifier or directory link has been suspended, delisted, or does not exist on our servers. Verification check failed.</p>
+            
+            <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                <a href="index.html" class="btn-login" style="padding: 12px 30px; border-radius: 8px;">
+                    <span>Return to Exchange Board</span>
+                </a>
+                <a href="login.html" class="btn-prev" style="padding: 12px 30px; border-radius: 8px; font-weight: 700; color: var(--text-primary);">
+                    <span>Access Secure Portal</span>
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+
+    <script src="js/script.js"></script>
+</body>
+</html>

@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client Portal | ApexExchange Group</title>
-    <meta name="description" content="Securely log in to the ApexExchange Client Portal to access your stock brokerage accounts, corporate compliance filings, and market listings dashboard.">
+    <title>Client Portal | Stackly Group</title>
+    <meta name="description" content="Securely log in to the Stackly Client Portal to access your stock brokerage accounts, corporate compliance filings, and market listings dashboard.">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -12,14 +12,16 @@
     <!-- 1. Header Navigation -->
     <header>
         <div class="logo-container">
-            <a href="index.html" class="logo-container">
-        <img src="images/logo.webp" alt="ApexExchange Logo" class="logo-img">
+            <a href="index.html">
+                <img src="images/logo.webp" alt="Stackly Logo" class="logo-img">
             </a>
         </div>
 
         <nav>
             <div class="nav-links">
                 <a href="index.html">Home</a>
+                <a href="market.html">Market</a>
+                <a href="stock.html">Stock</a>
                 <a href="about.html">About Us</a>
                 <a href="services.html">Services</a>
             </div>
@@ -37,6 +39,7 @@
     <div class="mobile-nav" id="mobile-menu-drawer">
         <div class="mobile-nav-links">
             <a href="index.html">Home</a>
+            <a href="market.html">Market</a>
             <a href="about.html">About Us</a>
             <a href="services.html">Services</a>
             <a href="login.html">Client Portal</a>
@@ -103,6 +106,10 @@
                 </button>
 
             </form>
+            
+            <div style="text-align: center; margin-top: 24px; font-size: 0.85rem; color: var(--text-secondary);">
+                New to Stackly? <a href="register.html" class="forgot-password">Register Here</a>
+            </div>
 
         </div>
 
@@ -156,46 +163,7 @@
         </div>
     </div>
 
-    <!-- 3. Footer -->
-    <footer>
-        <div class="footer-grid">
-            <div class="footer-info">
-                <h4 class="logo-text">APEX<span>EXCHANGE</span></h4>
-                <p>ApexExchange is a premium simulated trading and indices information platform inspired by national market architectures, designed with extreme responsive fidelity.</p>
-            </div>
-            <div class="footer-links">
-                <h5>Market Indices</h5>
-                <ul>
-                    <li><a href="index.html">NIFTY 50</a></li>
-                    <li><a href="index.html">NIFTY BANK</a></li>
-                    <li><a href="index.html">NIFTY IT</a></li>
-                    <li><a href="#">SENSEX Overview</a></li>
-                </ul>
-            </div>
-            <div class="footer-links">
-                <h5>Resources</h5>
-                <ul>
-                    <li><a href="about.html">About ApexExchange</a></li>
-                    <li><a href="services.html">Trading Services</a></li>
-                    <li><a href="services.html#calculator-anchor">Transaction Calculator</a></li>
-                    <li><a href="login.html">Investor Relations</a></li>
-                </ul>
-            </div>
-            <div class="footer-links">
-                <h5>Regulatory</h5>
-                <ul>
-                    <li><a href="#">SEBI Disclosures</a></li>
-                    <li><a href="#">Market Surveillance</a></li>
-                    <li><a href="#">Investor Protection</a></li>
-                    <li><a href="#">Terms & Privacy</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <div>&copy; 2026 ApexExchange. All rights reserved. Designed for professional stock market references.</div>
-            <div style="margin-top: 5px;">Powered by Mock Real-Time Financial Feeds.</div>
-        </div>
-    </footer>
+    
 
     <script src="js/script.js"></script>
 </body>
