@@ -891,6 +891,7 @@ function initLoginPortal() {
                 
                 setTimeout(() => {
                     alert(`Welcome to Stackly! Successfully authenticated account: ${clientVal}`);
+                    sessionStorage.setItem("user_account_id", clientVal);
                     if (isCorporate) {
                         window.location.href = "coperate-dashboard.html";
                     } else {
@@ -944,6 +945,12 @@ function updatePortfolioState(holdings, cash, transactions) {
 // 13. INVESTOR DASHBOARD CONTROLLER
 // ==========================================
 function initInvestorDashboard() {
+    const storedId = sessionStorage.getItem("user_account_id");
+    if (storedId) {
+        const idDisplay = document.getElementById("investor-id-display");
+        if (idDisplay) idDisplay.textContent = storedId;
+    }
+
     const state = getPortfolioState();
     renderInvestorStats(state);
     renderHoldingsTable(state.holdings);
@@ -1208,6 +1215,12 @@ function getCorporateFilings() {
 }
 
 function initCorporateDashboard() {
+    const storedId = sessionStorage.getItem("user_account_id");
+    if (storedId) {
+        const cinDisplay = document.getElementById("corporate-cin-display");
+        if (cinDisplay) cinDisplay.textContent = storedId;
+    }
+
     renderFilingsList();
     
     // Live update company share stats (We use RELIANCE as corporate database entity)
