@@ -1607,117 +1607,125 @@ footer {
     header {
         padding: 0 4%;
     }
-
-    .dashboard-grid {
+    .dashboard-grid, .stock-detail-layout, .dashboard-sidebar-grid {
         grid-template-columns: 1fr;
     }
-
-    .stats-grid {
+    .stats-grid, .directors-grid, .services-grid, .heatmap-grid, .insights-grid {
         grid-template-columns: repeat(2, 1fr);
     }
-
     .calc-grid {
         grid-template-columns: 1fr;
-    }
-
-    .directors-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .services-grid {
-        grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media (max-width: 768px) {
-
+    body {
+        overflow-x: hidden;
+    }
     .nav-links,
     .search-wrapper,
     header .btn-login,
     header .market-status {
         display: none;
     }
-
     .mobile-toggle {
         display: flex;
     }
-
-    .indices-container {
+    .mobile-toggle.active span:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+    }
+    .mobile-toggle.active span:nth-child(2) {
+        opacity: 0;
+    }
+    .mobile-toggle.active span:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+    .hero-container {
+        flex-direction: column;
+    }
+    .hero-content {
+        width: 100%;
+        text-align: center;
+        padding-bottom: 30px;
+    }
+    .hero-stats {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .hero-stat-divider {
+        display: none;
+    }
+    .indices-container, .market-highlights, .stats-grid, .heatmap-grid, .insights-grid {
         grid-template-columns: 1fr;
     }
-
-    .market-highlights {
-        grid-template-columns: 1fr;
-    }
-
     .footer-grid {
         grid-template-columns: 1fr;
         gap: 30px;
     }
-
     .footer-bottom {
         flex-direction: column;
         gap: 15px;
         text-align: center;
     }
-
     .timeline::before {
         left: 20px;
     }
-
     .timeline-item {
         width: 100%;
         padding-left: 45px;
         padding-right: 0;
+        text-align: left !important;
     }
-
-    .timeline-item:nth-child(odd) {
-        text-align: left;
+    .timeline-item .timeline-badge {
+        left: 12px !important;
     }
-
-    .timeline-item:nth-child(odd) .timeline-badge,
-    .timeline-item:nth-child(even) .timeline-badge {
-        left: 12px;
-    }
-
-    .timeline-item:nth-child(even) {
-        left: 0;
-    }
-
-    .directors-grid {
+    .directors-grid, .services-grid {
         grid-template-columns: 1fr;
     }
-
-    .services-grid {
-        grid-template-columns: 1fr;
-    }
-
     .about-hero h1 {
         font-size: 2.2rem;
+    }
+    .movers-tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 5px;
+        max-width: 100%;
+    }
+    .movers-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    .corporate-hero-panel {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
     }
 }
 
 @media (max-width: 480px) {
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
-
     .chart-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 12px;
     }
-
     .mover-tab-btn {
         padding: 6px 12px;
         font-size: 0.75rem;
     }
-
     .calc-form,
     .calc-results,
     .login-card {
         padding: 20px 16px;
     }
+    .insight-card-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.7rem; }
+    h3 { font-size: 1.3rem; }
 }
 
 /* ==========================================
@@ -3285,219 +3293,5 @@ footer {
     border-color: var(--border-highlight);
     box-shadow: 0 0 24px rgba(59, 130, 246, 0.15);
     transform: translateY(-2px);
-}
-
-/* ==========================================
-   PROFESSIONAL RESPONSIVE DESIGN
-========================================== */
-
-/* ---------- Large Tablets ---------- */
-@media (max-width:1024px){
-
-    .container{
-        width:95%;
-    }
-
-    .stock-detail-layout,
-    .dashboard-sidebar-grid{
-        grid-template-columns:1fr;
-        gap:24px;
-    }
-
-    .dashboard-stats{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-    .heatmap-grid{
-        grid-template-columns:repeat(3,1fr);
-    }
-
-    .insights-grid{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-    section{
-        padding:70px 5%;
-    }
-
-}
-
-/* ---------- Tablets ---------- */
-@media (max-width:768px){
-
-    html{
-        font-size:15px;
-    }
-
-    section{
-        padding:60px 20px;
-    }
-
-    /* Header */
-
-    header{
-        height:70px;
-        padding:0 20px;
-        justify-content:space-between;
-        flex-wrap:nowrap;
-    }
-
-    .logo-container{
-        flex:1;
-    }
-
-    .mobile-toggle{
-        display:flex;
-    }
-
-    .nav-links{
-        display:none;
-    }
-
-    .search-wrapper{
-        display:none;
-    }
-
-    .btn-login{
-        display:none;
-    }
-
-    /* Hero */
-
-    .hero{
-        padding-top:120px;
-        text-align:center;
-    }
-
-    .hero-content{
-        width:100%;
-    }
-
-    .hero-buttons{
-        flex-direction:column;
-        width:100%;
-        gap:15px;
-    }
-
-    .hero-buttons .btn{
-        width:100%;
-    }
-
-    /* Cards */
-
-    .dashboard-stats,
-    .insights-grid,
-    .compliance-grid,
-    .filing-input-group{
-        grid-template-columns:1fr;
-    }
-
-    .heatmap-grid{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-    .stock-detail-layout{
-        gap:20px;
-    }
-
-    .corporate-hero-panel{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:20px;
-    }
-
-    .register-card{
-        width:100%;
-        padding:30px;
-    }
-
-    .table-responsive{
-        overflow-x:auto;
-    }
-
-}
-
-/* ---------- Mobile ---------- */
-@media (max-width:576px){
-
-    html{
-        font-size:14px;
-    }
-
-    section{
-        padding:50px 16px;
-    }
-
-    h1{
-        font-size:2rem;
-    }
-
-    h2{
-        font-size:1.7rem;
-    }
-
-    h3{
-        font-size:1.3rem;
-    }
-
-    p{
-        font-size:.95rem;
-    }
-
-    .dashboard-stats,
-    .heatmap-grid{
-        grid-template-columns:1fr;
-    }
-
-    .card,
-    .dashboard-card,
-    .insight-card{
-        padding:18px;
-    }
-
-    .register-card{
-        padding:24px 18px;
-    }
-
-    .error-code{
-        font-size:5rem;
-    }
-
-    .error-subtitle{
-        font-size:1.3rem;
-    }
-
-    .insight-card-footer{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:12px;
-    }
-
-    .btn,
-    button{
-        width:100%;
-    }
-
-}
-
-/* ---------- Small Phones ---------- */
-@media (max-width:360px){
-
-    html{
-        font-size:13px;
-    }
-
-    .logo img{
-        width:38px;
-    }
-
-    header{
-        padding:0 12px;
-    }
-
-    .register-card{
-        padding:18px 14px;
-    }
-
 }
 
