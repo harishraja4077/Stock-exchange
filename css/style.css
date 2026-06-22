@@ -2483,8 +2483,13 @@ footer {
 }
 
 @keyframes slowZoom {
-    0% { transform: scale(1); }
-    100% { transform: scale(1.15); }
+    0% {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(1.15);
+    }
 }
 
 .hero-bg-glow {
@@ -2899,7 +2904,7 @@ footer {
     left: -80px;
     width: 450px;
     z-index: 0;
-    filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5));
+    filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.5));
     animation: floatSimple 8s ease-in-out infinite;
 }
 
@@ -3283,138 +3288,216 @@ footer {
 }
 
 /* ==========================================
-   18. NEW MEDIA BREAKPOINTS & OVERRIDES
-   ========================================== */
-@media (max-width: 1024px) {
+   PROFESSIONAL RESPONSIVE DESIGN
+========================================== */
+
+/* ---------- Large Tablets ---------- */
+@media (max-width:1024px){
+
+    .container{
+        width:95%;
+    }
 
     .stock-detail-layout,
-    .dashboard-sidebar-grid {
-        grid-template-columns: 1fr;
+    .dashboard-sidebar-grid{
+        grid-template-columns:1fr;
+        gap:24px;
     }
 
-    .heatmap-grid {
-        grid-template-columns: repeat(3, 1fr);
+    .dashboard-stats{
+        grid-template-columns:repeat(2,1fr);
     }
 
-    .dashboard-stats {
-        grid-template-columns: repeat(2, 1fr);
+    .heatmap-grid{
+        grid-template-columns:repeat(3,1fr);
     }
 
-    .insights-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .insights-grid{
+        grid-template-columns:repeat(2,1fr);
     }
+
+    section{
+        padding:70px 5%;
+    }
+
 }
 
-@media (max-width: 768px) {
-    .heatmap-grid {
-        grid-template-columns: repeat(2, 1fr);
+/* ---------- Tablets ---------- */
+@media (max-width:768px){
+
+    html{
+        font-size:15px;
     }
 
-    .compliance-grid {
-        grid-template-columns: 1fr;
+    section{
+        padding:60px 20px;
     }
 
-    .filing-input-group {
-        grid-template-columns: 1fr;
+    /* Header */
+
+    header{
+        height:70px;
+        padding:0 20px;
+        justify-content:space-between;
+        flex-wrap:nowrap;
     }
 
-    .corporate-hero-panel {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
+    .logo-container{
+        flex:1;
     }
 
-    .insights-grid {
-        grid-template-columns: 1fr;
+    .mobile-toggle{
+        display:flex;
     }
 
-    .insights-section {
-        padding: 48px 16px 40px;
+    .nav-links{
+        display:none;
     }
+
+    .search-wrapper{
+        display:none;
+    }
+
+    .btn-login{
+        display:none;
+    }
+
+    /* Hero */
+
+    .hero{
+        padding-top:120px;
+        text-align:center;
+    }
+
+    .hero-content{
+        width:100%;
+    }
+
+    .hero-buttons{
+        flex-direction:column;
+        width:100%;
+        gap:15px;
+    }
+
+    .hero-buttons .btn{
+        width:100%;
+    }
+
+    /* Cards */
+
+    .dashboard-stats,
+    .insights-grid,
+    .compliance-grid,
+    .filing-input-group{
+        grid-template-columns:1fr;
+    }
+
+    .heatmap-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .stock-detail-layout{
+        gap:20px;
+    }
+
+    .corporate-hero-panel{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:20px;
+    }
+
+    .register-card{
+        width:100%;
+        padding:30px;
+    }
+
+    .table-responsive{
+        overflow-x:auto;
+    }
+
 }
 
-@media (max-width: 480px) {
-    .heatmap-grid {
-        grid-template-columns: 1fr;
+/* ---------- Mobile ---------- */
+@media (max-width:576px){
+
+    html{
+        font-size:14px;
     }
 
-    .dashboard-stats {
-        grid-template-columns: 1fr;
+    section{
+        padding:50px 16px;
     }
 
-    .error-code {
-        font-size: 5.5rem;
+    h1{
+        font-size:2rem;
     }
 
-    .error-subtitle {
-        font-size: 1.4rem;
+    h2{
+        font-size:1.7rem;
     }
 
-    .register-card {
-        padding: 24px 16px;
+    h3{
+        font-size:1.3rem;
     }
 
-    .insight-card-footer {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
+    p{
+        font-size:.95rem;
     }
-} 
-/* Additional Mobile Styles */
-@media (max-width: 768px) {
-    /* Show mobile toggle button */
-    .mobile-toggle {
-        display: flex;
+
+    .dashboard-stats,
+    .heatmap-grid{
+        grid-template-columns:1fr;
     }
-    /* Hide desktop navigation links */
-    .nav-links {
-        display: none;
+
+    .card,
+    .dashboard-card,
+    .insight-card{
+        padding:18px;
     }
-    /* Adjust header layout for mobile */
-    header {
-        flex-direction: column;
-        height: auto;
-        padding: 10px 5%;
-        gap: 12px;
+
+    .register-card{
+        padding:24px 18px;
     }
-    .logo-container {
-        justify-content: center;
+
+    .error-code{
+        font-size:5rem;
     }
-    .search-wrapper {
-        width: 100%;
-        max-width: 300px;
+
+    .error-subtitle{
+        font-size:1.3rem;
     }
-    .btn-login {
-        align-self: center;
+
+    .insight-card-footer{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:12px;
     }
+
+    .btn,
+    button{
+        width:100%;
+    }
+
 }
 
-/* Mobile drawer overlay */
-.mobile-nav {
-    position: fixed;
-    top: 0;
-    left: -100%;
-    width: 80%;
-    height: 100%;
-    background: var(--bg-panel);
-    backdrop-filter: var(--glass-blur);
-    transition: var(--transition);
-    z-index: 95;
-    overflow-y: auto;
-    padding: 20px;
-}
-.mobile-nav.active {
-    left: 0;
-}
-.mobile-nav-links a {
-    display: block;
-    padding: 12px 0;
-    font-size: 1rem;
-    border-bottom: 1px solid var(--border-color);
-}
-/* Ensure overlay covers full screen on very small devices */
-@media (max-width: 480px) {
-    .mobile-nav {
-        width: 100%;
+/* ---------- Small Phones ---------- */
+@media (max-width:360px){
+
+    html{
+        font-size:13px;
     }
+
+    .logo img{
+        width:38px;
+    }
+
+    header{
+        padding:0 12px;
+    }
+
+    .register-card{
+        padding:18px 14px;
+    }
+
 }
+
