@@ -3359,4 +3359,62 @@ footer {
         align-items: flex-start;
         gap: 12px;
     }
+} 
+/* Additional Mobile Styles */
+@media (max-width: 768px) {
+    /* Show mobile toggle button */
+    .mobile-toggle {
+        display: flex;
+    }
+    /* Hide desktop navigation links */
+    .nav-links {
+        display: none;
+    }
+    /* Adjust header layout for mobile */
+    header {
+        flex-direction: column;
+        height: auto;
+        padding: 10px 5%;
+        gap: 12px;
+    }
+    .logo-container {
+        justify-content: center;
+    }
+    .search-wrapper {
+        width: 100%;
+        max-width: 300px;
+    }
+    .btn-login {
+        align-self: center;
+    }
+}
+
+/* Mobile drawer overlay */
+.mobile-nav {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 80%;
+    height: 100%;
+    background: var(--bg-panel);
+    backdrop-filter: var(--glass-blur);
+    transition: var(--transition);
+    z-index: 95;
+    overflow-y: auto;
+    padding: 20px;
+}
+.mobile-nav.active {
+    left: 0;
+}
+.mobile-nav-links a {
+    display: block;
+    padding: 12px 0;
+    font-size: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+/* Ensure overlay covers full screen on very small devices */
+@media (max-width: 480px) {
+    .mobile-nav {
+        width: 100%;
+    }
 }
